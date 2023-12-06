@@ -17,7 +17,7 @@ namespace RESTful.Models
             _HouseTasks = new List<HouseTask>()
             {
                 new HouseTask(1,"Faire la vaisselle", "Nettoyer dans lévier les assiettes, etc..",false),
-                new HouseTask(2,"Passer l'aspirateur", "Il afut passer l'aspirateur dans toute la maison",false),
+                new HouseTask(2,"Passer l'aspirateur", "Il faut passer l'aspirateur dans toute la maison",false),
                 new HouseTask(3,"Ranger la chambre", "Il faut retirer les vêtements sales dans la chambre, etc..",false),
 
             };
