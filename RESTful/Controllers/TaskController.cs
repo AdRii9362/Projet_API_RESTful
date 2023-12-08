@@ -93,12 +93,31 @@ namespace RESTful.Controllers
             existingTask.IsCompleted = houseTask.IsCompleted;
             // Mettez à jour d'autres propriétés si nécessaire
 
-            return Ok(houseTask);
+            return Ok(existingTask);
             //return Ok($"{houseTask.TaskId}| {houseTask.Title}| {houseTask.Description}| {houseTask.IsCompleted} "); // Retourner la tâche mise à jour avec le statut 200 (OK)
         }
 
         #endregion
 
+        #region PatchIsCompleted
+
+        [HttpPatch] 
+        
+        public ActionResult PatchIsCompleted(int id,bool isCompleted) 
+        {
+            var existingTask = _FDB.HouseTasks.FirstOrDefault(houseTask => houseTask.TaskId == id);
+
+            if (existingTask == null)
+            {
+                return NotFound(); // Retourner 404 (Not Found) si la tâche avec l'ID spécifié n'est pas trouvée
+            }
+
+            existingTask.IsCompleted = isCompleted;
+
+            return Ok(existingTask);
+        }
+        #endregion
+       
         #region Supprimer une tâche
 
         [HttpDelete] 
