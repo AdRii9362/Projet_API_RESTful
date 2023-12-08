@@ -15,18 +15,22 @@ namespace RESTful.Controllers
 
         [HttpGet]
 
-        public IEnumerable<HouseTask> GetAllTasks()
-        {
-            return _FDB.HouseTasks;
-        }
+        //public IEnumerable<HouseTask> GetAllTasks()
+        //{
+        //    return _FDB.HouseTasks;
+        //}
 
+        public ActionResult<List<HouseTask>> GetAllTask()
+        {
+            return Ok(_FDB.HouseTasks.ToList());
+        }
         #endregion
 
         #region Afficher une tâche selon l'ID
 
         [HttpGet("{id}")]
 
-        public ActionResult GetTaskById(int id)
+        public ActionResult<HouseTask> GetTaskById(int id)
         {
             HouseTask houseTask = _FDB.HouseTasks.Find(hs => hs.TaskId == id);
 
@@ -50,15 +54,15 @@ namespace RESTful.Controllers
             {
                 return Conflict($"Une tâche avec l'ID {houseTask.TaskId} existe déjà.");
             }
-            else if (_FDB.HouseTasks.Any(task => task.Title == houseTask.Title))
+
+             if (_FDB.HouseTasks.Any(task => task.Title == houseTask.Title))
             {
                 return Conflict($"La tâche {houseTask.Title} existe déjà.");
             }
-            else
-            {
-                _FDB.HouseTasks.Add(houseTask);
-                return Ok($"La tâche {houseTask.Title} portant l'id {houseTask.TaskId} ayant comme description {houseTask.Description} et à bien été ajouté et a comme statut complétée: {houseTask.IsCompleted}");
-            }
+
+            _FDB.HouseTasks.Add(houseTask);
+            return Ok($"La tâche {houseTask.Title} portant l'id {houseTask.TaskId} ayant comme description {houseTask.Description} et à bien été ajouté et a comme statut complétée: {houseTask.IsCompleted}");
+            
 
         }
         #endregion
@@ -89,14 +93,16 @@ namespace RESTful.Controllers
             existingTask.IsCompleted = houseTask.IsCompleted;
             // Mettez à jour d'autres propriétés si nécessaire
 
-            return Ok($"{houseTask.TaskId}| {houseTask.Title}| {houseTask.Description}| {houseTask.IsCompleted} "); // Retourner la tâche mise à jour avec le statut 200 (OK)
+            return Ok(houseTask);
+            //return Ok($"{houseTask.TaskId}| {houseTask.Title}| {houseTask.Description}| {houseTask.IsCompleted} "); // Retourner la tâche mise à jour avec le statut 200 (OK)
         }
 
         #endregion
 
         #region Supprimer une tâche
 
-        [HttpDelete] public ActionResult DeleteTask(int id)
+        [HttpDelete] 
+        public ActionResult DeleteTask(int id)
         {
             var existringTask = _FDB.HouseTasks.FirstOrDefault(task => task.TaskId == id);
 
