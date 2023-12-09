@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using RESTful.Models;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 
 namespace RESTful.Controllers
 {
@@ -13,7 +14,7 @@ namespace RESTful.Controllers
 
         #region Afficher les tâches
 
-        [HttpGet]
+        [HttpGet("{GetAllTask}")]
 
         //public IEnumerable<HouseTask> GetAllTasks()
         //{
@@ -21,14 +22,14 @@ namespace RESTful.Controllers
         //}
 
         public ActionResult<List<HouseTask>> GetAllTask()
-        {
-            return Ok(_FDB.HouseTasks.ToList());
-        }
-        #endregion
+    {
+        return Ok(_FDB.HouseTasks.ToList());
+    }
+    #endregion
 
         #region Afficher une tâche selon l'ID
 
-        [HttpGet("{id}")]
+    [HttpGet("{ById}")]
 
         public ActionResult<HouseTask> GetTaskById(int id)
         {
@@ -46,7 +47,7 @@ namespace RESTful.Controllers
 
         #region Ajouter une tâche
 
-        [HttpPost]
+        [HttpPost("{CreateTask}")]
         public ActionResult CreateTask(HouseTask houseTask)
         {
 
@@ -55,21 +56,22 @@ namespace RESTful.Controllers
                 return Conflict($"Une tâche avec l'ID {houseTask.TaskId} existe déjà.");
             }
 
-             if (_FDB.HouseTasks.Any(task => task.Title == houseTask.Title))
+            if (_FDB.HouseTasks.Any(task => task.Title == houseTask.Title))
             {
                 return Conflict($"La tâche {houseTask.Title} existe déjà.");
             }
 
             _FDB.HouseTasks.Add(houseTask);
+
             return Ok($"La tâche {houseTask.Title} portant l'id {houseTask.TaskId} ayant comme description {houseTask.Description} et à bien été ajouté et a comme statut complétée: {houseTask.IsCompleted}");
-            
+
 
         }
         #endregion
 
-        #region Modifier une tâche
+        #region Modifier toute une tâche 
 
-        [HttpPut]
+        [HttpPut("{UpdateTask}")]
 
         //public IEnumerable<HouseTask> UpdateTask(int id, HouseTask houseTask)
         //{
@@ -99,11 +101,79 @@ namespace RESTful.Controllers
 
         #endregion
 
+        #region Modifier un élément d'une tâche
+
+        #region PatchId
+
+        [HttpPatch("{Id}")]
+
+        public ActionResult PatchId(string title, int id)
+        {
+            var existingTask = _FDB.HouseTasks.FirstOrDefault(housetask => housetask.Title == title);
+
+            if (existingTask == null)
+            {
+                return NotFound();
+            }
+
+            existingTask.TaskId = id;
+
+            var existingID = _FDB.HouseTasks.FirstOrDefault(housetaskid => housetaskid.TaskId == id);
+
+            if (existingID != null)
+            {
+                return Conflict("Id existant");
+            }
+
+            return Ok(existingTask);
+        }
+        #endregion
+
+        #region PatchTitle
+
+        [HttpPatch("{Title}")]
+
+        public ActionResult PatchTitle(int id, string title)
+        {
+            var existingTask = _FDB.HouseTasks.FirstOrDefault(houseTask => houseTask.TaskId == id);
+
+            if (existingTask == null)
+            {
+                return NotFound(); // Retourner 404 (Not Found) si la tâche avec l'ID spécifié n'est pas trouvée
+            }
+
+            existingTask.Title = title;
+
+            return Ok(existingTask);
+        }
+        #endregion
+
+        #region PatchDescription
+
+        [HttpPatch("{Description}")]
+
+        public ActionResult PatchDescription(int id, string description)
+        {
+            var existingTask = _FDB.HouseTasks.FirstOrDefault(houseTask => houseTask.TaskId == id);
+
+            if (existingTask == null)
+            {
+                return NotFound();
+            }
+
+            existingTask.Description = description;
+
+            return Ok(existingTask);
+
+        }
+
+        #endregion
+
         #region PatchIsCompleted
 
-        [HttpPatch] 
-        
-        public ActionResult PatchIsCompleted(int id,bool isCompleted) 
+        [HttpPatch("{IsCompleted}")]
+
+        public ActionResult PatchIsCompleted(int id, bool isCompleted)
         {
             var existingTask = _FDB.HouseTasks.FirstOrDefault(houseTask => houseTask.TaskId == id);
 
@@ -118,10 +188,12 @@ namespace RESTful.Controllers
         }
 
         #endregion
-       
+
+        #endregion
+
         #region Supprimer une tâche
 
-        [HttpDelete] 
+        [HttpDelete("{DeleteTask}")]
         public ActionResult DeleteTask(int id)
         {
             var existringTask = _FDB.HouseTasks.FirstOrDefault(task => task.TaskId == id);
