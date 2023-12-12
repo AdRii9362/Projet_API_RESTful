@@ -14,7 +14,7 @@ namespace RESTful.Controllers
 
         #region Afficher les tâches
 
-        [HttpGet("{GetAllTask}")]
+        [HttpGet]
 
         //public IEnumerable<HouseTask> GetAllTasks()
         //{
@@ -29,7 +29,7 @@ namespace RESTful.Controllers
 
         #region Afficher une tâche selon l'ID
 
-    [HttpGet("{ById}")]
+    [HttpGet("{Id}")]
 
         public ActionResult<HouseTask> GetTaskById(int id)
         {
@@ -47,7 +47,7 @@ namespace RESTful.Controllers
 
         #region Ajouter une tâche
 
-        [HttpPost("{CreateTask}")]
+        [HttpPost]
         public ActionResult CreateTask(HouseTask houseTask)
         {
 
@@ -71,7 +71,7 @@ namespace RESTful.Controllers
 
         #region Modifier toute une tâche 
 
-        [HttpPut("{UpdateTask}")]
+        [HttpPut]
 
         //public IEnumerable<HouseTask> UpdateTask(int id, HouseTask houseTask)
         //{
@@ -193,7 +193,7 @@ namespace RESTful.Controllers
 
         #region Supprimer une tâche
 
-        [HttpDelete("{DeleteTask}")]
+        [HttpDelete]
         public ActionResult DeleteTask(int id)
         {
             var existringTask = _FDB.HouseTasks.FirstOrDefault(task => task.TaskId == id);
